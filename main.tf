@@ -1,22 +1,17 @@
-# Provider Configuration
-provider "aws" {
-  region = "us-east-1"
-}
-
 # Step 1 — Create SSH Key Pair
 resource "aws_key_pair" "default" {
-  key_name   = "terraform-key-first"
+  key_name   = var.key_name
   public_key = file("/home/codespace/.ssh/id_rsa.pub")
 }
 
 # Step 2 — Create Security Group
 resource "aws_security_group" "ec2_sg" {
-  name        = "terraform_allow_ssh"
+  name        = var.ec2_sg
   description = "Allow SSH inbound traffic"
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = var.ssh_port
+    to_port     = var.ssh_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -33,28 +28,22 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# Step 3 — Create EC2 Instance
+# Step 3 — Create EC2 Instances
 resource "aws_instance" "ec2" {
-  ami                    = "ami-081b0a6eac00b4f53"
-  instance_type          = "t2.micro"
-  key_name               = aws_key_pair.default.key_name
+  count = var.instance_count
+
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  subnet_id = "subnet-005d4953d9734f867"
+  subnet_id              = "subnet-005d4953d9734f867"
+
+  root_block_device {
+    volume_size = var.volume_size
+    volume_type = var.volume_type
+  }
 
   tags = {
-    Name = "Terraform-EC2"
+    Name = "${var.tags["Name"]}-${count.index}"
   }
-}
-
-# Step 4 — Outputs
-output "public_ip" {
-  value = aws_instance.ec2.public_ip
-}
-
-output "key_name" {
-  value = aws_key_pair.default.key_name
-}
-
-output "public_dns" {
-  value = aws_instance.ec2.public_dns
 }
