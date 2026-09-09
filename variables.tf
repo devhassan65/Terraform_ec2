@@ -2,7 +2,7 @@
 variable "instance_count" {
   description = "Number of EC2 instances to create"
   type        = number
-  default     = 2
+  default     = 3
 }
 
 
@@ -14,12 +14,12 @@ variable "ec2_username" {
 
 variable "key_name" {
   type = string
-  default = "Terraform-key-third"
+  default = "Terraform-prod-first"
 }
 
 variable "ec2_sg" {
   type = string
-  default = "allow_ssh"
+  default = "allow_ssh_prod"
   description = "security group name"
 }
 
@@ -43,6 +43,7 @@ variable "tags" {
    type = map(string)
    default = {
      "Name" = "Terraform-EC2"
+      Environment = "dev"
    }
 }
 

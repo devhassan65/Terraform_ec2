@@ -44,6 +44,7 @@ resource "aws_instance" "ec2" {
   }
 
   tags = {
-    Name = "${var.tags["Name"]}-${count.index}"
+    Name = "${var.tags["Name"]}-${terraform.workspace}-${count.index+1}"
+    Environment = "terraform.workspace"
   }
 }
