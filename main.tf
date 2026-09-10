@@ -43,8 +43,4 @@ resource "aws_instance" "ec2" {
     volume_type = var.volume_type
   }
 
-  tags = {
-    Name = "${var.tags["Name"]}-${terraform.workspace}-${count.index+1}"
-    Environment = "terraform.workspace"
-  }
 }
