@@ -38,3 +38,4 @@ variable "volume_type" {
 variable "environment" {
   type = string
 }
+

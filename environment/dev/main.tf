@@ -22,7 +22,7 @@ file_permission = "0400"  # Restrict access to the private key
 module "dev_ec2" {
   source = "../../modules/ec2"
   environment = "dev"
-  ami = "ami-0b6d9d3d33ba97d99"
+  ami = "ami-0354c98ae10b02961"
   instance_count = 1
   ec2_username = "ec2-user"
   key_name = aws_key_pair.default.key_name
@@ -35,4 +35,6 @@ module "dev_ec2" {
   volume_size = 10
   volume_type = "gp3"
   instance_type = "t2.micro"
-} 
+  user_data = file("../../modules/ec2/scripts/install_services.sh")
+
+  } 
