@@ -1,10 +1,9 @@
-
-
 # Create a Security Group
 resource "aws_security_group" "ec2_sg" {
   name        = var.ec2_sg
-  description = "Allow SSH inbound traffic"
+  description = "Allow SSH and HTTP inbound traffic"
 
+  # SSH - Port 22
   ingress {
     from_port   = var.ssh_port
     to_port     = var.ssh_port
@@ -12,6 +11,15 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # HTTP - Port 80
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
@@ -23,15 +31,19 @@ resource "aws_security_group" "ec2_sg" {
 
 # Create EC2 Instance
 resource "aws_instance" "ec2" {
-  ami                    = var.ami  #Amazon Linux
+  ami                    = var.ami
   instance_type          = var.instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  count = var.instance_count
-  subnet_id = "subnet-005d4953d9734f867"
+  count                  = var.instance_count
+  subnet_id              = "subnet-005d4953d9734f867"
+
+  user_data = var.user_data
+
   tags = {
-    Name = "${var.tags["Name"]}-${count.index+1}"
+    Name = "${var.tags["Name"]}-${count.index + 1}"
   }
+
   root_block_device {
     volume_size = var.volume_size
     volume_type = var.volume_type
